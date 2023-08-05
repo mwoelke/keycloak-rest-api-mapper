@@ -1,10 +1,12 @@
 # Keycloak REST API Mapper
 
-This custom mapper for keycloak allows querying a URL (e.g. REST API) and add the result as a claim.
+This custom mapper for keycloak allows querying a URL (e.g. REST API) and add the JSON result as a claim.
 You can configure the URL, Username/Password for HTTP Basic Auth and a timeout in seconds.
 Optionally, you may also add the users username in a configurable URL parameter.
 
-If anything fails, "ERROR" will simply be put in the claim for now.
+If anything fails (network, auth, ...), the claim will not be included.
+
+Note: The result hast to be valid JSON!
 
 # Setup 
 

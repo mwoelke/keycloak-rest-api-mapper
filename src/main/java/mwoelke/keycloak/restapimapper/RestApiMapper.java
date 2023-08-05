@@ -13,8 +13,10 @@ import org.keycloak.protocol.oidc.mappers.UserInfoTokenMapper;
 import org.keycloak.provider.ProviderConfigProperty;
 import org.keycloak.representations.IDToken;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -22,9 +24,7 @@ import java.net.http.HttpResponse.BodyHandlers;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class RestApiMapper extends AbstractOIDCProtocolMapper
 		implements OIDCAccessTokenMapper, OIDCIDTokenMapper, UserInfoTokenMapper {
@@ -108,10 +108,12 @@ public class RestApiMapper extends AbstractOIDCProtocolMapper
 		final String usernameParameter = mappingModel.getConfig().get(USER_NAME_PARAMETER);
 
 		// result string
-		String res;
+		JsonNode resultJson;
 
 		// create client
 		HttpClient client = HttpClient.newHttpClient();
+
+		ObjectMapper mapper = new ObjectMapper();
 
 		try {
 			// build URI
@@ -131,13 +133,14 @@ public class RestApiMapper extends AbstractOIDCProtocolMapper
 					.build();
 
 			HttpResponse<String> response = client.send(getRequest, BodyHandlers.ofString());
-			res = response.statusCode() == 200 ? response.body() : "ERROR";
+			resultJson = (response.statusCode() == 200) ? mapper.readTree(response.body()) : null;
+
 		} catch (Exception e) {
 			// hardmap to ERROR on any exception (timeout, invalid url, ...)
-			res = "ERROR";
+			resultJson = null;
 		}
 
-		OIDCAttributeMapperHelper.mapClaim(token, mappingModel, res);
+		OIDCAttributeMapperHelper.mapClaim(token, mappingModel, resultJson);
 	}
 
 	/**
