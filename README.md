@@ -6,7 +6,7 @@ Optionally, you may also add the users username in a configurable URL parameter.
 
 If anything fails (network, auth, ...), the claim will not be included.
 
-Note: The result hast to be valid JSON!
+Note: The result has to be valid JSON!
 
 # Setup 
 
