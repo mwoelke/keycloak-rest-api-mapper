@@ -133,10 +133,11 @@ public class RestApiMapper extends AbstractOIDCProtocolMapper
 					.build();
 
 			HttpResponse<String> response = client.send(getRequest, BodyHandlers.ofString());
+			// parse json if status 200
 			resultJson = (response.statusCode() == 200) ? mapper.readTree(response.body()) : null;
 
 		} catch (Exception e) {
-			// hardmap to ERROR on any exception (timeout, invalid url, ...)
+			// null results in the claim not getting set
 			resultJson = null;
 		}
 
